@@ -1,132 +1,123 @@
 import { useState } from "react";
 import "./App.css";
 
-function Field(props) {
-  if (props.min) {
+// Create a section for education and expertise next
+
+const capitalize = (text) => text[0].toUpperCase() + text.slice(1);
+
+function Info(props) {
+    if (props.type ==="website") {
+
+        return (
+            <div className="info-wrapper">
+                <ion-icon name={props.icon + "-outline"}></ion-icon>
+                <a className={props.type +"-info"}>{props.text}</a>
+            </div>
+        );
+    }
     return (
-      <div className="field-wrapper">
-        <label for={props.id}>{props.labelText}: </label>
-        <input
-          type={props.type}
-          id={props.id}
-          name={props.name}
-          min={props.min}
-          value={props.min}
-        ></input>
-      </div>
+        <div className="info-wrapper">
+            <ion-icon name={props.icon + "-outline"}></ion-icon>
+            <p className={props.type +"-info"}>{props.text}</p>
+        </div>
     );
-  }
-
-  return (
-    <div className="field-wrapper">
-      <label for={props.id}>{props.labelText}: </label>
-      <input type={props.type} id={props.id} name={props.name}></input>
-    </div>
-  );
-}
-
-function Edit(props) {
-  return <button className={props.section + "-btn"}>Edit</button>;
-}
-
-function Submit(props) {
-  return (
-    <button className={props.section + "-btn"} type="submit">
-      Submit
-    </button>
-  );
-}
-
-// A section to add general information
-function GeneralInfo(props) {
-  return (
-    <section className="general-info">
-      <Field id="name" labelText="Name" type="text" name="name" />
-      <Field id="usermail" labelText="Email" type="email" name="usermail" />
-      <Field id="userphone" labelText="Phone" type="tel" name="userphone" />
-      <Edit section="general-info" />
-      <Submit section="general-info" />
-    </section>
-  );
 }
 
 function Education(props) {
-  return (
-    <section className="education">
-      <Field
-        id="school-name"
-        labelText="School"
-        type="text"
-        name="school-name"
-      />
-      <Field
-        id="title-of-study"
-        labelText="Title of study"
-        type="text"
-        name="title-of-study"
-      />
-      <Field
-        id="date-of-study-start"
-        labelText="Start date"
-        type="date"
-        name="date-of-study-start"
-        min="1950-01-01"
-      />
-      <Field
-        id="date-of-study-end"
-        labelText="End date"
-        type="date"
-        name="date-of-study-end"
-        min="1950-01-01"
-      />
-      <Edit section="education" />
-      <Submit section="education" />
-    </section>
-  );
+    return (
+        <div>
+            <h3 className="degree">{props.degree}</h3>
+            <h4 className="university">{props.university}</h4>
+            <p className="period">{props.period}</p>
+        </div>
+    );
 }
 
-function Experience(props) {
-  return (
-    <section className="experience">
-      <Field
-        id="company-name"
-        labelText="Company"
-        type="text"
-        name="company-name"
-      />
-      <Field
-        id="company-position"
-        labelText="Position"
-        type="text"
-        name="company-position"
-      />
-      <Field
-        id="date-of-experience-start"
-        labelText="Start date"
-        type="date"
-        name="date-of-experience-start"
-        min="1950-01-01"
-      />
-      <Field
-        id="date-of-experience-end"
-        labelText="End date"
-        type="date"
-        name="date-of-experience-end"
-        min="1950-01-01"
-      />
-      <Edit section="experience" />
-      <Submit section="experience" />
-    </section>
-  );
+function Section(props) {
+    if (props.type === "general-info") {
+        return(
+            <>
+                <h2>General Info</h2>
+                <div className="section general-info" >
+                    <Info icon="call" type="telephone" text={props.telephone}/>
+                    <Info icon="mail" type="mail" text={props.mail}/>
+                    <Info icon="desktop" type="website" text={props.website}/>
+                    <Info icon="location" type="location" text={props.location}/>
+                </div>
+            </>
+        );
+    } else if (props.type === "education") {
+        return(
+            <>
+                <h2>Education</h2>
+                <div className="section education">
+                    {props.list.map(e => <Education key={e.degree} degree={e.degree} university={e.university} period={e.period} />)}
+                </div>
+            </>
+        );
+    } else {
+        return (
+            <>
+                <h2>{capitalize(props.type)}</h2>
+                <div className="section">
+                    {props.list.map(e => <p key={e}>{e}</p>)}
+                </div>
+            </>
+        );
+    }
 }
 
 function App() {
+    const generalInfo = {
+        name: "Olivia Wilson",
+        job: "Computer Scientist",
+        telephone: "+1-234-567-789",
+        mail: "oliviawilson@gmail.com",
+        website: "oliviawilson.com",
+        location: "20 Cooper Square, New York, NY 10003, USA",
+    };
+
+    const education = [
+        {
+            degree: "Bachelor of Computer Science",
+            university: "University of Purdue",
+            period: "2008-2012"
+        },
+        {
+            degree: "Master of Computer Science",
+            university: "University of Purdue",
+            period: "2013-2015"
+        },
+    ];
+
+    const expertises = [
+        "Low level programming",
+        "Integrated systems",
+        "Network programming",
+        "Compilers",
+    ];
+
+    const languages = ["English", "French", "Spanish", "Mandarin Chinese"];
+
   return (
-    <form>
-      <GeneralInfo />
-      <Education />
-      <Experience />
-    </form>
+        <div id="main">
+            <div className="left-section">
+                <Section 
+                    type="general-info"
+                    telephone={generalInfo.telephone} 
+                    mail={generalInfo.mail}
+                    website={generalInfo.website}
+                    location={generalInfo.location}
+                />
+                <Section type="education" list={education} />
+                <Section type="expertise" list={expertises} />
+                <Section type="language" list={languages} />
+            </div>
+            <div className="right-section">
+
+            </div>
+
+        </div>
   );
 }
 
