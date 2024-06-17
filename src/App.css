@@ -23,6 +23,12 @@
     grid-area: right;
 }
 
+.reference-wrapper {
+    display: flex;
+    gap: 1rem;
+
+}
+
 /* .section { */
 /*     max-height: 300px; */
 /*     overflow: scroll; */
