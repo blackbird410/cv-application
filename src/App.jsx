@@ -88,10 +88,18 @@ function Profile(props) {
 function Experience(props) {
     return(
         <div className="experience">
-            <div class="period">
-                <p>{props.end}<br>-<br>{props.start}</p>
+            <div className="period">
+                <p>{props.end}<br></br>-<br></br>{props.start}</p>
             </div>
-            <div class="description"></div>
+            <div className="description">
+                <h3 className="institution">{props.institution}</h3>
+                <p className="role">{props.role}</p>
+                <ul>
+                    {props.jobs.map(j => 
+                        <p key={j} className="responsibility">{j}</p>)
+                    }
+                </ul>
+            </div>
         </div>
     );
 }
@@ -101,7 +109,14 @@ function ExperienceList(props) {
         <div className="experience-list">
             <Info icon="briefcase" type="work experience"/>
             <div className="experience-wrapper">
-
+                {props.experiences.map(e => 
+                    <Experience 
+                        key={e.institution} 
+                        start={e.start} 
+                        end={e.end} 
+                        institution={e.institution} 
+                        jobs={e.responsibilities} 
+                        role={e.role} />)}
             </div>
         </div>
     );
@@ -141,6 +156,31 @@ function App() {
 
     const languages = ["English", "French", "Spanish", "Mandarin Chinese"];
 
+    const experiences = [
+        {
+            start: "2016",
+            end: "2020",
+            institution: "TSMC",
+            role: "Senior Engineer",
+            responsibilities: [
+                "Developing new products or solving practical computing problems",
+                "Conducting research involving experimentation and modeling",
+                "Seeking to improve the performance of existing computer systems and software",
+            ],
+        },
+        {
+            start: "2020",
+            end: "2023",
+            institution: "Amazon",
+            role: "Senior Developper",
+            responsibilities: [
+                "Thinking about and conceptualizing computational and maths-related problems and challenges",
+                "Designing and implementing algorithms and data structures to solve complex computational problems",
+                "Conducting research to advance the field of computer science and contribute to scientific publications",
+            ],
+        },
+    ];
+
   return (
         <div id="main">
             <div className="left-section">
@@ -158,7 +198,7 @@ function App() {
             <div className="right-section">
                 <Header name={generalInfo.name} job={generalInfo.job}/>
                 <Profile text={generalInfo.profile}/>
-                <Experience />
+                <ExperienceList experiences={experiences} />
             </div>
         </div>
   );
