@@ -18,7 +18,7 @@ function Info(props) {
     return (
         <div className="info-wrapper">
             <ion-icon name={props.icon + "-outline"}></ion-icon>
-            <p className={props.type +"-info"}>{props.text}</p>
+            <p className={props.type +"-info"}>{(props.text) ? props.text : capitalize(props.type) }</p>
         </div>
     );
 }
@@ -67,6 +67,46 @@ function Section(props) {
     }
 }
 
+function Header(props) {
+    return (
+        <div className="header-wrapper">
+            <h1 className="username">{props.name}</h1>
+            <h2 className="user-job">{props.job}</h2>
+        </div>
+    );
+}
+
+function Profile(props) {
+    return(
+        <div className="profile">
+            <Info icon="person" type="profile" />
+            <p className="profile-text">{props.text}</p>
+        </div>
+    );
+}
+
+function Experience(props) {
+    return(
+        <div className="experience">
+            <div class="period">
+                <p>{props.end}<br>-<br>{props.start}</p>
+            </div>
+            <div class="description"></div>
+        </div>
+    );
+}
+
+function ExperienceList(props) {
+    return (
+        <div className="experience-list">
+            <Info icon="briefcase" type="work experience"/>
+            <div className="experience-wrapper">
+
+            </div>
+        </div>
+    );
+}
+
 function App() {
     const generalInfo = {
         name: "Olivia Wilson",
@@ -75,6 +115,8 @@ function App() {
         mail: "oliviawilson@gmail.com",
         website: "oliviawilson.com",
         location: "20 Cooper Square, New York, NY 10003, USA",
+        profile: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum consequat dictum lorem, eu faucibus turpis volutpat at. Donec sagittis convallis condimentum. Cras faucibus luctus ex, ac fringilla nulla. Praesent sollicitudin viverra volutpat. Ut eu hendrerit neque. In neque est, interdum scelerisque semper ac, volutpat eu ligula. Praesent tempus justo vel mollis euismod. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eu semper arcu. Nulla nibh mauris, vehicula nec tincidunt dignissim, posuere ut orci. Fusce ac tincidunt nisi. Fusce nec nibh suscipit nisl porttitor porta. In a ligula in nisi sollicitudin laoreet vel in sapien. Morbi elementum volutpat tellus vitae convallis. Fusce convallis odio ligula, sit amet pharetra nisi ornare quis.",
+
     };
 
     const education = [
@@ -114,9 +156,10 @@ function App() {
                 <Section type="language" list={languages} />
             </div>
             <div className="right-section">
-
+                <Header name={generalInfo.name} job={generalInfo.job}/>
+                <Profile text={generalInfo.profile}/>
+                <Experience />
             </div>
-
         </div>
   );
 }
