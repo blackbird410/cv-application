@@ -3,7 +3,7 @@ import "./App.css";
 
 // Create a section for education and expertise next
 
-const generalInfo = {
+let generalInfo = {
     name: "Olivia Wilson",
     job: "Computer Scientist",
     telephone: "+1-234-567-789",
@@ -126,7 +126,10 @@ function Section(props) {
     if (props.type === "general-info") {
         return(
             <>
-                <h2>General Info</h2>
+                <div className="section-header">
+                    <h2>General Info</h2>
+                    <ion-icon name="create-outline" id={props.type + "-edit"}></ion-icon>
+                </div>
                 <div className="section general-info" >
                     <Info icon="call" type="telephone" text={props.telephone}/>
                     <Info icon="mail" type="mail" text={props.mail}/>
@@ -138,7 +141,10 @@ function Section(props) {
     } else if (props.type === "education") {
         return(
             <>
-                <h2>Education</h2>
+                <div className="section-header">
+                    <h2>Education</h2>
+                    <ion-icon name="create-outline" id={props.type + "-edit"}></ion-icon>
+                </div>
                 <div className="section education">
                     {props.list.map(e => <Education key={e.degree} degree={e.degree} university={e.university} period={e.period} />)}
                 </div>
@@ -147,7 +153,10 @@ function Section(props) {
     } else {
         return (
             <>
-                <h2>{capitalize(props.type)}</h2>
+                <div className="section-header">
+                    <h2>{capitalize(props.type)}</h2>
+                    <ion-icon name="create-outline" id={props.type + "-edit"}></ion-icon>
+                </div>
                 <div className="section">
                     {props.list.map(e => <p key={e}>{e}</p>)}
                 </div>
@@ -239,7 +248,144 @@ function ReferenceList(props) {
     );
 }
 
+const getIconName = (input) => {
+    if (input === "name") return "person";
+    else if (input === "job") return "briefcase"
+    else if (input === "telephone") return "call";
+    else if (input === "mail" ) return input;
+    else if (input === "website") return "desktop";
+    else if (input === "location") return "location";
+    else return "information-circle";
+}
+
+const updateData = (e) => {
+    // Based on which form was sent as event, it will update the data we alreadt have with the inputs in the form
+
+    const infoCategory = e.target.id.slice(0, -9);
+    e.preventDefault();
+    console.log(infoCategory);
+
+    if (infoCategory === "general-info") {
+        // Get the entries in the inputs (7) 
+        let counter = 0;
+
+        Object.keys(generalInfo).forEach(i => {
+            const d = Object.keys(generalInfo)[counter];
+            const v = (document.querySelector(`form #${i}`).value) 
+                ? document.querySelector(`form #${i}`).value  
+                : document.querySelector(`form #${i}`).placeholder; 
+            generalInfo[d] = v;
+            counter += 1;
+        })
+    } else {
+
+    }
+    removeForm();
+} 
+
+const removeForm = () => {
+    // Removes any form that is in the DOMTree because there can be only one on the screen
+    const f = document.querySelector("form");
+    f && f.parentNode.removeChild(f);
+}
+
+class GeneralInfoForm {
+    constructor(g = {}) {
+        this.form = document.createElement("form");
+        this.form.id = "general-info-form";
+        this.form.noValidate = true;
+
+        const inputList = [
+            { type: "name", placeholder: g.name },
+            { type: "job", placeholder: g.job },
+            { type: "telephone", placeholder: g.telephone },
+            { type: "mail", placeholder: g.mail },
+            { type: "website", placeholder: g.website },
+            { type: "location", placeholder: g.location },
+            { type: "profile", placeholder: g.profile },
+        ];
+
+        inputList.forEach(i => {
+            const wrapper = document.createElement("div");
+            const input = (i.type !== "profile" ) 
+                ? document.createElement("input") 
+                : document.createElement("textarea");
+            const icon = document.createElement("ion-icon");
+
+            wrapper.className = "input-wrapper";
+            if (i.type === "profile") {
+                input.rows = "10";
+                input.cols = "30";
+            }
+            input.id = i.type;
+            input.name = i.type;
+            input.placeholder = (i.placeholder) ? i.placeholder : "Add your " + i.type;
+            icon.name = getIconName(i.type);
+
+            wrapper.appendChild(icon);
+            wrapper.appendChild(input);
+            this.form.appendChild(wrapper);
+        })
+
+        this.btnWrapper = document.createElement("div");
+        this.btnSave = document.createElement("button");
+        this.btnCancel = document.createElement("button");
+
+        this.btnWrapper.classList.add("btn-wrapper");
+
+        this.btnSave.id = "general-info-save-btn";
+        this.btnSave.className = "save-btn";
+        this.btnSave.textContent = "Save";
+        this.btnSave.addEventListener("click", updateData);
+        this.btnWrapper.appendChild(this.btnSave);
+
+        this.btnCancel.id = "general-info-cancel-btn";
+        this.btnCancel.className = "cancel-btn";
+        this.btnCancel.name = "cancel-btn";
+        this.btnCancel.textContent = "Cancel";
+        this.btnCancel.addEventListener("click", removeForm);
+        this.btnWrapper.appendChild(this.btnCancel);
+
+        this.form.appendChild(this.btnWrapper);
+    }
+}
+
+const editGInfo = (gInfo) => {
+    // When the edit button is clicked, a form will be shown to modify the inputs 
+    if (!document.querySelector("form")) {
+        const main = document.querySelector("#main");
+        const f = new GeneralInfoForm(gInfo);
+        main.appendChild(f.form);
+    } else removeForm();
+}
+
+const edit = (e) => {
+    const section = e.target.id.slice(0, -5);
+    const gInfo = generalInfo;
+    if(section == "general-info") editGInfo(gInfo);
+    else if (section === "education") console.log("Not possible yet!");
+    else if (section === "expertise")  console.log("Not possible yet!");
+    else if (section === "language")  console.log("Not possible yet!");
+    else console.log("Not possible yet!");
+}
+
+const addEvents = () => {
+    const sectionEdits = document.querySelectorAll(".section-header ion-icon");
+    sectionEdits.forEach(e => e.addEventListener("click", edit));
+}
+
 function App() {
+    addEvents();
+    const [gInfo, setgInfo] = useState({});
+
+    const setName = (newName) => setgInfo({...gInfo, name: newName});
+    const setJob = (newJob) => setgInfo({...gInfo, job: newJob});
+    const setPhone = (newPhone) => setgInfo({...gInfo, telephone: newPhone});
+    const setMail = (newMail) => setgInfo({...gInfo, mail: newMail});
+    const setWebsite = (newWebsite) => setgInfo({...gInfo, website: newWebsite});
+    const setLocation = (newLocation) => setgInfo({...gInfo, location: newLocation});
+    const setProfile = (newProfile) => setgInfo({...gInfo, profile: newProfile});
+
     experiences = experiences.sort((a, b) => b.start - a.start);
 
   return (
