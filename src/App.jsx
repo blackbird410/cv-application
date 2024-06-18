@@ -34,7 +34,7 @@ const initialExpertises = [
 
 const initialLanguages = ["English", "French", "Spanish", "Mandarin Chinese"];
 
-const initialExperiences = [
+let initialExperiences = [
     {
         start: "2016",
         end: "2020",
@@ -284,17 +284,19 @@ const getIconName = (input) => {
     else if (input === "degree") return "ribbon";
     else if (input === "university") return "school";
     else if (input === "period") return "hourglass";
+    else if (input === "language") return "language";
     else return "information-circle";
 };
 
 function App() {
+    initialExperiences = initialExperiences.sort((a, b) => b.start.localeCompare(a.start));
     const [generalInfo, setGeneralInfo] = useState(initialGeneralInfo);
     const [education, setEducation] = useState(initialEducation);
     const [expertises, setExpertises] = useState(initialExpertises);
     const [languages, setLanguages] = useState(initialLanguages);
     const [experiences, setExperiences] = useState(initialExperiences);
     const [references, setReferences] = useState(initialReferences);
-    const [isEditing, setIsEditing] = useState(false);
+    const [isEditing, setIsEditing] = useState(false); 
 
     const handleEdit = (section) => {
         setIsEditing(section);
@@ -478,6 +480,32 @@ function EducationForm({ education, handleAdd, handleCancel }) {
                 <button type="button" className="cancel-btn" onClick={handleCancel}>
                     Cancel
                 </button>
+            </div>
+        </form>
+    );
+}
+
+function LanguageForm({ languages, handleAdd, handleCancel}) {
+    const [language, setLanguage] = useState("");
+    const handleChange = (e) => setLanguage(e.target.value);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleAdd("language", [ ...languages, language]);
+    }
+
+    return (
+        <form id="language-form" onSubmit={handleSubmit}>
+            <div className="input-wrapper">
+                <ion-icon name={getIconName("language")}></ion-icon>
+                <input
+                    type="text"
+                    id={key}
+                    name={key}
+                    placeholder={`Enter the ${key}`}
+                    value={formData[key]}
+                    onChange={handleChange}
+                />
             </div>
         </form>
     );
