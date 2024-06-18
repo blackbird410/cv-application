@@ -110,17 +110,20 @@ function Info({ icon, type, text }) {
     );
 }
 
-function Education({ degree, university, period }) {
+function Education({ degree, university, period, handleRemove}) {
     return (
         <div>
-            <h3 className="degree">{degree}</h3>
+            <div className="education-header">
+                <h3 className="degree">{degree}</h3>
+                <ion-icon name="trash" onClick={handleRemove}></ion-icon>
+            </div>
             <h4 className="university">{university}</h4>
             <p className="period">{period}</p>
         </div>
     );
 }
 
-function Section({ type, list, generalInfo, handleEdit }) {
+function Section({ type, list, generalInfo, handleEdit, handleRemove }) {
     if (type === "general-info") {
         return (
             <>
@@ -141,11 +144,16 @@ function Section({ type, list, generalInfo, handleEdit }) {
             <>
                 <div className="section-header">
                     <h2>Education</h2>
-                    <ion-icon name="create-outline" onClick={() => handleEdit(type)}></ion-icon>
+                    <ion-icon name="add-circle" onClick={() => handleEdit(type)}></ion-icon>
                 </div>
                 <div className="section education">
                     {list.map((e) => (
-                        <Education key={e.degree} degree={e.degree} university={e.university} period={e.period} />
+                        <Education 
+                            key={e.degree} 
+                            degree={e.degree} 
+                            university={e.university} 
+                            period={e.period} 
+                            handleRemove={handleRemove} />
                     ))}
                 </div>
             </>
@@ -155,11 +163,14 @@ function Section({ type, list, generalInfo, handleEdit }) {
             <>
                 <div className="section-header">
                     <h2>{capitalize(type)}</h2>
-                    <ion-icon name="create-outline" onClick={() => handleEdit(type)}></ion-icon>
+                    <ion-icon name="add-circle" onClick={() => handleEdit(type)}></ion-icon>
                 </div>
                 <div className="section">
                     {list.map((e) => (
-                        <p key={e}>{e}</p>
+                        <div key={e} className={`${type}-wrapper`}>
+                            <p>{e}</p>
+                            <ion-icon name="trash" onClick={handleRemove}></ion-icon>
+                        </div>
                     ))}
                 </div>
             </>
@@ -270,11 +281,19 @@ const getIconName = (input) => {
     else if (input === "mail") return input;
     else if (input === "website") return "desktop";
     else if (input === "location") return "location";
+    else if (input === "degree") return "ribbon";
+    else if (input === "university") return "school";
+    else if (input === "period") return "hourglass";
     else return "information-circle";
 };
 
 function App() {
     const [generalInfo, setGeneralInfo] = useState(initialGeneralInfo);
+    const [education, setEducation] = useState(initialEducation);
+    const [expertises, setExpertises] = useState(initialExpertises);
+    const [languages, setLanguages] = useState(initialLanguages);
+    const [experiences, setExperiences] = useState(initialExperiences);
+    const [references, setReferences] = useState(initialReferences);
     const [isEditing, setIsEditing] = useState(false);
 
     const handleEdit = (section) => {
@@ -285,6 +304,36 @@ function App() {
         setGeneralInfo(updatedInfo);
         setIsEditing(false);
     };
+
+    const handleAdd = (type, newInfo) => {
+        if ( type === "education") setEducation(newInfo);
+        else if (type === "expertise") setExpertises(newInfo);
+        else if (type === "language") setLanguages(newInfo);
+        else if (type === "experience") setExperiences(newInfo);
+        else if (type === "reference") setReferences(newInfo);
+        else {
+            console.error("Case not anticipated");
+        }
+        setIsEditing(false);
+        console.table(education);
+    }
+
+    const handleRemove = (e) => {
+        const parent = e.target.parentNode.className;
+
+        if (parent === "education-header") {
+            const newEducation = education.filter(
+                (item) => item.degree !== e.target.parentNode.childNodes[0].textContent);
+            setEducation(newEducation)
+        } else if (parent === "language-wrapper") {
+            const newLanguages = languages.filter((item) => item !== e.target.parentNode.childNodes[0].textContent);
+            setLanguages(newLanguages);
+        } else {
+            const newExpertises = expertises.filter((item) => item !== e.target.parentNode.childNodes[0].textContent);
+            setExpertises(newExpertises);
+        } 
+
+    }
 
     const handleCancel = () => {
         setIsEditing(false);
@@ -298,15 +347,15 @@ function App() {
                     generalInfo={generalInfo}
                     handleEdit={handleEdit}
                 />
-                <Section type="education" list={initialEducation} handleEdit={handleEdit} />
-                <Section type="expertise" list={initialExpertises} handleEdit={handleEdit} />
-                <Section type="language" list={initialLanguages} handleEdit={handleEdit} />
+                <Section type="education" list={education} handleEdit={handleEdit} handleRemove={handleRemove} />
+                <Section type="expertise" list={expertises} handleEdit={handleEdit} handleRemove={handleRemove} />
+                <Section type="language" list={languages} handleEdit={handleEdit} handleRemove={handleRemove} />
             </div>
             <div className="right-section">
                 <Header name={generalInfo.name} job={generalInfo.job} />
                 <Profile text={generalInfo.profile} />
-                <ExperienceList experiences={initialExperiences} />
-                <ReferenceList references={initialReferences} />
+                <ExperienceList experiences={experiences} />
+                <ReferenceList references={references} />
             </div>
 
             {isEditing === "general-info" && (
@@ -316,6 +365,15 @@ function App() {
                     handleCancel={handleCancel}
                 />
             )}
+
+            {isEditing === "education" && (
+                <EducationForm
+                    education={education}
+                    handleAdd={handleAdd}
+                    handleCancel={handleCancel}
+                />
+            )}
+
         </div>
     );
 }
@@ -361,6 +419,56 @@ function GeneralInfoForm({ generalInfo, handleSave, handleCancel }) {
                             onChange={handleChange}
                         />
                     )}
+                </div>
+            ))}
+            <div className="btn-wrapper">
+                <button type="submit" className="save-btn">
+                    Save
+                </button>
+                <button type="button" className="cancel-btn" onClick={handleCancel}>
+                    Cancel
+                </button>
+            </div>
+        </form>
+    );
+}
+
+function EducationForm({ education, handleAdd, handleCancel }) {
+    // Adds a new education information to the education list
+    const [formData, setFormData] = useState({
+        degree: "",
+        university: "",
+        period: ""
+    });
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleAdd("education", [...education, formData]);
+    };
+
+    const inputs = ["degree", "university", "period"];
+
+    return (
+        <form id="education-form" onSubmit={handleSubmit}>
+            {inputs.map((key) => (
+                <div key={key} className="input-wrapper">
+                    <ion-icon name={getIconName(key)}></ion-icon>
+                    <input
+                        type="text"
+                        id={key}
+                        name={key}
+                        placeholder={`Enter the ${key}`}
+                        value={formData[key]}
+                        onChange={handleChange}
+                    />
                 </div>
             ))}
             <div className="btn-wrapper">

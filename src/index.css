@@ -185,6 +185,13 @@ button:hover {
   color: red;
 }
 
+.education-header,
+.language-wrapper, 
+.expertise-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
 body {
   margin: 0;
