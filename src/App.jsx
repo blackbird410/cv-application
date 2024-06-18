@@ -275,16 +275,15 @@ function ReferenceList({ references }) {
 }
 
 const getIconName = (input) => {
-    if (input === "name") return "person";
+    if (["mail", "language", "bulb"].includes(input)) return input;
+    else if (input === "name") return "person";
     else if (input === "job") return "briefcase";
     else if (input === "telephone") return "call";
-    else if (input === "mail") return input;
     else if (input === "website") return "desktop";
     else if (input === "location") return "location";
     else if (input === "degree") return "ribbon";
     else if (input === "university") return "school";
     else if (input === "period") return "hourglass";
-    else if (input === "language") return "language";
     else return "information-circle";
 };
 
@@ -317,7 +316,6 @@ function App() {
             console.error("Case not anticipated");
         }
         setIsEditing(false);
-        console.table(education);
     }
 
     const handleRemove = (e) => {
@@ -334,7 +332,6 @@ function App() {
             const newExpertises = expertises.filter((item) => item !== e.target.parentNode.childNodes[0].textContent);
             setExpertises(newExpertises);
         } 
-
     }
 
     const handleCancel = () => {
@@ -376,6 +373,21 @@ function App() {
                 />
             )}
 
+            {isEditing === "language" && (
+                <LanguageForm
+                    languages={languages}
+                    handleAdd={handleAdd}
+                    handleCancel={handleCancel}
+                />
+            )}
+            
+            {isEditing === "expertise" && (
+                <ExpertiseForm
+                    expertises={expertises}
+                    handleAdd={handleAdd}
+                    handleCancel={handleCancel}
+                />
+            )}
         </div>
     );
 }
@@ -485,6 +497,40 @@ function EducationForm({ education, handleAdd, handleCancel }) {
     );
 }
 
+
+function ExpertiseForm({ expertises, handleAdd, handleCancel}) {
+    const [data, setData] = useState("");
+    const handleChange = (e) => setData(e.target.value);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleAdd("expertise", [ ...expertises, data]);
+    }
+
+    return (
+        <form id="expertise-form" onSubmit={handleSubmit}>
+            <div className="input-wrapper">
+                <ion-icon name={getIconName("bulb")}></ion-icon>
+                <input
+                    type="text"
+                    id="expertise-input"
+                    name="expertise-input"
+                    placeholder={`Enter your expertise`}
+                    onChange={handleChange}
+                />
+            </div>
+            <div className="btn-wrapper">
+                <button type="submit" className="save-btn">
+                    Save
+                </button>
+                <button type="button" className="cancel-btn" onClick={handleCancel}>
+                    Cancel
+                </button>
+            </div>
+        </form>
+    );
+}
+
 function LanguageForm({ languages, handleAdd, handleCancel}) {
     const [language, setLanguage] = useState("");
     const handleChange = (e) => setLanguage(e.target.value);
@@ -500,12 +546,19 @@ function LanguageForm({ languages, handleAdd, handleCancel}) {
                 <ion-icon name={getIconName("language")}></ion-icon>
                 <input
                     type="text"
-                    id={key}
-                    name={key}
-                    placeholder={`Enter the ${key}`}
-                    value={formData[key]}
+                    id="language-input"
+                    name="language-input"
+                    placeholder={`Enter the language`}
                     onChange={handleChange}
                 />
+            </div>
+            <div className="btn-wrapper">
+                <button type="submit" className="save-btn">
+                    Save
+                </button>
+                <button type="button" className="cancel-btn" onClick={handleCancel}>
+                    Cancel
+                </button>
             </div>
         </form>
     );
