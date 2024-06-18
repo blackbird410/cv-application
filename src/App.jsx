@@ -187,10 +187,16 @@ function Header({ name, job }) {
     );
 }
 
-function Profile({ text }) {
+function Profile({ text, handleEdit }) {
     return (
         <div className="profile">
-            <Info icon="person" type="profile" />
+            <div className="profile-header">
+                <Info icon="person" type="profile" />
+                <ion-icon 
+                    name="create-outline" 
+                    onClick={() => handleEdit("general-info")}>
+                </ion-icon>
+            </div>
             <p className="profile-text">{text}</p>
         </div>
     );
@@ -220,10 +226,13 @@ function Experience({ start, end, institution, role, jobs }) {
     );
 }
 
-function ExperienceList({ experiences }) {
+function ExperienceList({ experiences, handleEdit}) {
     return (
         <div className="experience-list">
-            <Info icon="briefcase" type="work experience" />
+            <div className="experience-header">
+                <Info icon="briefcase" type="work experience" />
+                <ion-icon name="add-circle" onClick={handleEdit("experience")}></ion-icon>
+            </div>
             <div className="experience-wrapper">
                 {experiences.map((e) => (
                     <Experience
@@ -352,8 +361,8 @@ function App() {
             </div>
             <div className="right-section">
                 <Header name={generalInfo.name} job={generalInfo.job} />
-                <Profile text={generalInfo.profile} />
-                <ExperienceList experiences={experiences} />
+                <Profile text={generalInfo.profile} handleEdit={handleEdit} />
+                <ExperienceList experiences={experiences} handleEdit={handleEdit}/>
                 <ReferenceList references={references} />
             </div>
 
@@ -388,6 +397,7 @@ function App() {
                     handleCancel={handleCancel}
                 />
             )}
+
         </div>
     );
 }
@@ -563,5 +573,66 @@ function LanguageForm({ languages, handleAdd, handleCancel}) {
         </form>
     );
 }
+
+
+// function ExperienceForm({ experiences, handleAdd, handleCancel }) {
+//     // Adds a new education information to the education list
+//     const [formData, setFormData] = useState({
+//         start: "",
+//         end: "",
+//         institution: "",
+//         role: "",
+//         responsibilities: []
+//     });
+//
+//     const handleChange = (e) => {
+//         const { name, value } = e.target;
+//         setFormData({
+//             ...formData,
+//             [name]: value,
+//         });
+//     };
+//
+//     const handleSubmit = (e) => {
+//         e.preventDefault();
+//         handleAdd("education", [...education, formData]);
+//     };
+//
+//     const inputs = ["degree", "university", "period"];
+//
+//     return (
+//         <form id="education-form" onSubmit={handleSubmit}>
+//             {inputs.map((key) => (
+//                 <div key={key} className="input-wrapper">
+//                     <ion-icon name={getIconName(key)}></ion-icon>
+//                     <input
+//                         type="text"
+//                         id={key}
+//                         name={key}
+//                         placeholder={`Enter the ${key}`}
+//                         value={formData[key]}
+//                         onChange={handleChange}
+//                     />
+//                 </div>
+//             ))}
+//             <div className="btn-wrapper">
+//                 <button type="submit" className="save-btn">
+//                     Save
+//                 </button>
+//                 <button type="button" className="cancel-btn" onClick={handleCancel}>
+//                     Cancel
+//                 </button>
+//             </div>
+//         </form>
+//     );
+// }
+//
+            // {isEditing === "experience" && (
+            //     <ExperienceForm
+            //         experiences={experiences}
+            //         handleAdd={handleAdd}
+            //         handleCancel={handleCancel}
+            //     />
+            // )}
 
 export default App;
