@@ -129,7 +129,13 @@ form {
     height: 100%;
     z-index: 3;
     position: fixed;
-    justify-self: start;
+}
+
+form #responsibility-form {
+    z-index: 5;
+    width: 60%;
+    height: auto;
+    background-color: red;
 }
 
 form > div {

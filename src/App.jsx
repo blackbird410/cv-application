@@ -218,7 +218,7 @@ function Experience({ start, end, institution, role, jobs }) {
                 <p className="role">{role}</p>
                 <ul>
                     {jobs.map((j) => (
-                        <li key={j} className="responsibility">{j}</li>
+                        <li key={j} className="responsibility">{capitalize(j)}</li>
                     ))}
                 </ul>
             </div>
@@ -231,7 +231,7 @@ function ExperienceList({ experiences, handleEdit}) {
         <div className="experience-list">
             <div className="experience-header">
                 <Info icon="briefcase" type="work experience" />
-                <ion-icon name="add-circle" onClick={handleEdit("experience")}></ion-icon>
+                <ion-icon name="add-circle" onClick={() => handleEdit("experience")}></ion-icon>
             </div>
             <div className="experience-wrapper">
                 {experiences.map((e) => (
@@ -283,16 +283,29 @@ function ReferenceList({ references }) {
     );
 }
 
+function FormBtns({ handleCancel }) {
+    return (
+        <div className="btn-wrapper">
+            <button type="submit" className="save-btn">
+                Save
+            </button>
+            <button type="button" className="cancel-btn" onClick={handleCancel}>
+                Cancel
+            </button>
+        </div>
+    );
+}
+
 const getIconName = (input) => {
     if (["mail", "language", "bulb"].includes(input)) return input;
+    else if (["period", "start", "end"].includes(input)) return "hourglass";
+    else if (["job", "role"].includes(input)) return "briefcase";
     else if (input === "name") return "person";
-    else if (input === "job") return "briefcase";
     else if (input === "telephone") return "call";
     else if (input === "website") return "desktop";
     else if (input === "location") return "location";
     else if (input === "degree") return "ribbon";
     else if (input === "university") return "school";
-    else if (input === "period") return "hourglass";
     else return "information-circle";
 };
 
@@ -398,6 +411,14 @@ function App() {
                 />
             )}
 
+            {isEditing === "experience" && (
+                <ExperienceForm
+                    experiences={experiences}
+                    handleAdd={handleAdd}
+                    handleCancel={handleCancel}
+                />
+            )}
+
         </div>
     );
 }
@@ -445,14 +466,7 @@ function GeneralInfoForm({ generalInfo, handleSave, handleCancel }) {
                     )}
                 </div>
             ))}
-            <div className="btn-wrapper">
-                <button type="submit" className="save-btn">
-                    Save
-                </button>
-                <button type="button" className="cancel-btn" onClick={handleCancel}>
-                    Cancel
-                </button>
-            </div>
+            <FormBtns handleCancel={handleCancel}/>
         </form>
     );
 }
@@ -495,14 +509,7 @@ function EducationForm({ education, handleAdd, handleCancel }) {
                     />
                 </div>
             ))}
-            <div className="btn-wrapper">
-                <button type="submit" className="save-btn">
-                    Save
-                </button>
-                <button type="button" className="cancel-btn" onClick={handleCancel}>
-                    Cancel
-                </button>
-            </div>
+            <FormBtns handleCancel={handleCancel}/>
         </form>
     );
 }
@@ -529,14 +536,7 @@ function ExpertiseForm({ expertises, handleAdd, handleCancel}) {
                     onChange={handleChange}
                 />
             </div>
-            <div className="btn-wrapper">
-                <button type="submit" className="save-btn">
-                    Save
-                </button>
-                <button type="button" className="cancel-btn" onClick={handleCancel}>
-                    Cancel
-                </button>
-            </div>
+            <FormBtns handleCancel={handleCancel}/>
         </form>
     );
 }
@@ -558,81 +558,104 @@ function LanguageForm({ languages, handleAdd, handleCancel}) {
                     type="text"
                     id="language-input"
                     name="language-input"
-                    placeholder={`Enter the language`}
+                    placeholder="Enter the language"
                     onChange={handleChange}
                 />
             </div>
-            <div className="btn-wrapper">
-                <button type="submit" className="save-btn">
-                    Save
-                </button>
-                <button type="button" className="cancel-btn" onClick={handleCancel}>
-                    Cancel
-                </button>
+            <FormBtns handleCancel={handleCancel}/>
+        </form>
+    );
+}
+
+function ReponsibilityForm ({ list, handleAddResp, handleCancel }) {
+    const [responsibility, setResponsibility] = useState("");
+
+    const handleChange = (e) => setResponsibility(e.target.value);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleAddResp([ ...list, responsibility]);
+    }
+
+    return (
+        <form id="responsibility-form">
+            <div className="input-wrapper">
+                <ion-icon name={getIconName("responsibility")}></ion-icon>
+                <input 
+                    type="text" 
+                    id="responsibility-input"
+                    name="responsibility-input"
+                    placeholder="Enter the responbility"
+                    onChange={handleChange}
+                />
             </div>
+            <FormBtns handleCancel={handleCancel}/>
         </form>
     );
 }
 
 
-// function ExperienceForm({ experiences, handleAdd, handleCancel }) {
-//     // Adds a new education information to the education list
-//     const [formData, setFormData] = useState({
-//         start: "",
-//         end: "",
-//         institution: "",
-//         role: "",
-//         responsibilities: []
-//     });
-//
-//     const handleChange = (e) => {
-//         const { name, value } = e.target;
-//         setFormData({
-//             ...formData,
-//             [name]: value,
-//         });
-//     };
-//
-//     const handleSubmit = (e) => {
-//         e.preventDefault();
-//         handleAdd("education", [...education, formData]);
-//     };
-//
-//     const inputs = ["degree", "university", "period"];
-//
-//     return (
-//         <form id="education-form" onSubmit={handleSubmit}>
-//             {inputs.map((key) => (
-//                 <div key={key} className="input-wrapper">
-//                     <ion-icon name={getIconName(key)}></ion-icon>
-//                     <input
-//                         type="text"
-//                         id={key}
-//                         name={key}
-//                         placeholder={`Enter the ${key}`}
-//                         value={formData[key]}
-//                         onChange={handleChange}
-//                     />
-//                 </div>
-//             ))}
-//             <div className="btn-wrapper">
-//                 <button type="submit" className="save-btn">
-//                     Save
-//                 </button>
-//                 <button type="button" className="cancel-btn" onClick={handleCancel}>
-//                     Cancel
-//                 </button>
-//             </div>
-//         </form>
-//     );
-// }
-//
-            // {isEditing === "experience" && (
-            //     <ExperienceForm
-            //         experiences={experiences}
-            //         handleAdd={handleAdd}
-            //         handleCancel={handleCancel}
-            //     />
-            // )}
+function ExperienceForm({ experiences, handleAdd, handleCancel }) {
+    // Adds a new education information to the education list
+    const [formData, setFormData] = useState({
+        start: "",
+        end: "",
+        institution: "",
+        role: "",
+        responsibilities: ""
+    });
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleAdd("experience", [
+            ...experiences, 
+            { 
+                ...formData, 
+                responsibilities: formData.responsibilities.split(". "), 
+            }
+        ]);
+    };
+
+    return (
+        <form id="experience-form" onSubmit={handleSubmit}>
+            {Object.keys(formData).map((key) => (
+                    <div key={key} className="input-wrapper">
+                        <ion-icon name={getIconName(key)}></ion-icon>
+                        {key !== "responsibilities" 
+                        ? (
+                            <input
+                                type="text"
+                                id={key}
+                                name={key}
+                                placeholder={`Enter the ${key}`}
+                                value={formData[key]}
+                                onChange={handleChange}
+                            />) 
+                        : ( 
+                            <textarea 
+                                id={key}
+                                name={key}
+                                placeholder={"Enter responsibilities separated by a dot and a space"}
+                                rows="10"
+                                cols="40"
+                                value={formData[key]}
+                                onChange={handleChange}
+                            /> 
+                        )}
+                    </div> 
+            ))}
+            <FormBtns handleCancel={handleCancel}/>
+        </form>
+    );
+}
+
 
 export default App;
