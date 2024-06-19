@@ -93,6 +93,15 @@ const initialReferences = [
 
 const capitalize = (text) => text[0].toUpperCase() + text.slice(1);
 
+function TrashIcon({ handleRemove }) {
+    return (
+        <ion-icon 
+            name={getIconName("trash")} 
+            onClick={handleRemove}>
+        </ion-icon>
+    );
+}
+
 function Info({ icon, type, text }) {
     if (type === "website") {
         return (
@@ -115,7 +124,7 @@ function Education({ degree, university, period, handleRemove}) {
         <div>
             <div className="education-header">
                 <h3 className="degree">{degree}</h3>
-                <ion-icon name="trash" onClick={handleRemove}></ion-icon>
+                <TrashIcon handleRemove={handleRemove}/>
             </div>
             <h4 className="university">{university}</h4>
             <p className="period">{period}</p>
@@ -163,13 +172,16 @@ function Section({ type, list, generalInfo, handleEdit, handleRemove }) {
             <>
                 <div className="section-header">
                     <h2>{capitalize(type)}</h2>
-                    <ion-icon name="add-circle" onClick={() => handleEdit(type)}></ion-icon>
+                    <ion-icon 
+                        name="add-circle" 
+                        onClick={() => handleEdit(type)}>
+                    </ion-icon>
                 </div>
                 <div className="section">
                     {list.map((e) => (
                         <div key={e} className={`${type}-wrapper`}>
                             <p>{e}</p>
-                            <ion-icon name="trash" onClick={handleRemove}></ion-icon>
+                            <TrashIcon handleRemove={handleRemove}/>
                         </div>
                     ))}
                 </div>
@@ -202,7 +214,7 @@ function Profile({ text, handleEdit }) {
     );
 }
 
-function Experience({ start, end, institution, role, jobs }) {
+function Experience({ start, end, institution, role, jobs, handleRemove }) {
     return (
         <div className="experience">
             <div className="period">
@@ -214,8 +226,11 @@ function Experience({ start, end, institution, role, jobs }) {
                 </p>
             </div>
             <div className="description">
-                <h3 className="institution">{institution}</h3>
-                <p className="role">{role}</p>
+                <div className="experience-header">
+                    <h3 className="institution">{institution}</h3>
+                    <p className="role">{role}</p>
+                    <TrashIcon handleRemove={handleRemove}/>
+                </div>
                 <ul>
                     {jobs.map((j) => (
                         <li key={j} className="responsibility">{capitalize(j)}</li>
@@ -226,12 +241,12 @@ function Experience({ start, end, institution, role, jobs }) {
     );
 }
 
-function ExperienceList({ experiences, handleEdit}) {
+function ExperienceList({ experiences, handleEdit, handleRemove }) {
     return (
         <div className="experience-list">
-            <div className="experience-header">
+            <div className="experience-list-header">
                 <Info icon="briefcase" type="work experience" />
-                <ion-icon name="add-circle" onClick={() => handleEdit("experience")}></ion-icon>
+                <ion-icon name={getIconName("add")} onClick={() => handleEdit("experience")}></ion-icon>
             </div>
             <div className="experience-wrapper">
                 {experiences.map((e) => (
@@ -242,6 +257,7 @@ function ExperienceList({ experiences, handleEdit}) {
                         institution={e.institution}
                         jobs={e.responsibilities}
                         role={e.role}
+                        handleRemove={handleRemove}
                     />
                 ))}
             </div>
@@ -249,11 +265,14 @@ function ExperienceList({ experiences, handleEdit}) {
     );
 }
 
-function Reference({ name, institution, phone, mail }) {
+function Reference({ name, institution, phone, mail, handleRemove }) {
     return (
         <div className="reference">
-            <h3 className="name">{name}</h3>
-            <p className="institution">{institution}</p>
+            <div className="reference-header">
+                <h3 className="name">{name}</h3>
+                <p className="institution">{institution}</p>
+                <TrashIcon handleRemove={handleRemove}/>
+            </div>
             <p>
                 <a>Phone:</a> {phone}
             </p>
@@ -264,10 +283,13 @@ function Reference({ name, institution, phone, mail }) {
     );
 }
 
-function ReferenceList({ references }) {
+function ReferenceList({ references, handleEdit, handleRemove }) {
     return (
         <div className="reference-list">
-            <Info icon="book" type="references" />
+            <div className="reference-list-header">
+                <Info icon="book" type="references" />
+                <ion-icon name={getIconName("add")} onClick={() =>handleEdit("references")}></ion-icon>
+            </div>
             <div className="reference-wrapper">
                 {references.map((e) => (
                     <Reference
@@ -276,6 +298,7 @@ function ReferenceList({ references }) {
                         institution={e.institution}
                         phone={e.phone}
                         mail={e.mail}
+                        handleRemove={handleRemove}
                     />
                 ))}
             </div>
@@ -297,16 +320,28 @@ function FormBtns({ handleCancel }) {
 }
 
 const getIconName = (input) => {
-    if (["mail", "language", "bulb"].includes(input)) return input;
-    else if (["period", "start", "end"].includes(input)) return "hourglass";
-    else if (["job", "role"].includes(input)) return "briefcase";
-    else if (input === "name") return "person";
-    else if (input === "telephone") return "call";
-    else if (input === "website") return "desktop";
-    else if (input === "location") return "location";
-    else if (input === "degree") return "ribbon";
-    else if (input === "university") return "school";
-    else return "information-circle";
+    const iconMappings = {
+        mail: "mail",
+        language: "language",
+        bulb: "bulb",
+        trash: "trash",
+        period: "hourglass",
+        start: "hourglass",
+        end: "hourglass",
+        job: "briefcase",
+        role: "briefcase",
+        add: "add-circle",
+        name: "person",
+        telephone: "call",
+        website: "desktop",
+        location: "location",
+        degree: "ribbon",
+        university: "school",
+        institution: "business",
+        responsibilities: "construct"
+    };
+
+    return iconMappings[input] || "information-circle";
 };
 
 function App() {
@@ -345,13 +380,30 @@ function App() {
 
         if (parent === "education-header") {
             const newEducation = education.filter(
-                (item) => item.degree !== e.target.parentNode.childNodes[0].textContent);
+                (item) => item.degree !== e.target.parentNode
+                    .childNodes[0].textContent);
             setEducation(newEducation)
         } else if (parent === "language-wrapper") {
-            const newLanguages = languages.filter((item) => item !== e.target.parentNode.childNodes[0].textContent);
+            const newLanguages = languages.filter(
+                (item) => item !== e.target.parentNode.childNodes[0].textContent);
             setLanguages(newLanguages);
+        } else if (parent === "experience-header") {
+            const institution = e.target.parentNode.childNodes[0].textContent;
+            const role = e.target.parentNode.childNodes[1].textContent;
+
+            const newList = experiences.filter((item) => (
+                item.institution !== institution || item.role !== role));
+            setExperiences(newList);
+        } else if (parent === "reference-header") {
+            const name = e.target.parentNode.childNodes[0].textContent;
+            const institution = e.target.parentNode.childNodes[1].textContent;
+
+            const newReferences = references.filter((item) => (
+                item.name !== name || item.institution != institution));
+            setReferences(newReferences);
         } else {
-            const newExpertises = expertises.filter((item) => item !== e.target.parentNode.childNodes[0].textContent);
+            const newExpertises = expertises.filter(
+                (item) => item !== e.target.parentNode.childNodes[0].textContent);
             setExpertises(newExpertises);
         } 
     }
@@ -375,8 +427,8 @@ function App() {
             <div className="right-section">
                 <Header name={generalInfo.name} job={generalInfo.job} />
                 <Profile text={generalInfo.profile} handleEdit={handleEdit} />
-                <ExperienceList experiences={experiences} handleEdit={handleEdit}/>
-                <ReferenceList references={references} />
+                <ExperienceList experiences={experiences} handleEdit={handleEdit} handleRemove={handleRemove}/>
+                <ReferenceList references={references} handleEdit={handleEdit} handleRemove={handleRemove} />
             </div>
 
             {isEditing === "general-info" && (
@@ -414,6 +466,14 @@ function App() {
             {isEditing === "experience" && (
                 <ExperienceForm
                     experiences={experiences}
+                    handleAdd={handleAdd}
+                    handleCancel={handleCancel}
+                />
+            )}
+
+            {isEditing === "references" && (
+                <ReferenceForm
+                    references={references}
                     handleAdd={handleAdd}
                     handleCancel={handleCancel}
                 />
@@ -492,11 +552,9 @@ function EducationForm({ education, handleAdd, handleCancel }) {
         handleAdd("education", [...education, formData]);
     };
 
-    const inputs = ["degree", "university", "period"];
-
     return (
         <form id="education-form" onSubmit={handleSubmit}>
-            {inputs.map((key) => (
+            {Object.keys(formData).map((key) => (
                 <div key={key} className="input-wrapper">
                     <ion-icon name={getIconName(key)}></ion-icon>
                     <input
@@ -651,6 +709,47 @@ function ExperienceForm({ experiences, handleAdd, handleCancel }) {
                             /> 
                         )}
                     </div> 
+            ))}
+            <FormBtns handleCancel={handleCancel}/>
+        </form>
+    );
+}
+
+function ReferenceForm({ references, handleAdd, handleCancel }) {
+    const [formData, setFormData] = useState({
+        name: "",
+        institution: "",
+        phone: "",
+        mail: "",
+    });
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleAdd("reference", [...references, formData]);
+    };
+
+    return (
+        <form id="reference-form" onSubmit={handleSubmit}>
+            {Object.keys(formData).map((key) => (
+                <div key={key} className="input-wrapper">
+                    <ion-icon name={getIconName(key)}></ion-icon>
+                    <input
+                        type="text"
+                        id={key}
+                        name={key}
+                        placeholder={`Enter the ${key}`}
+                        value={formData[key]}
+                        onChange={handleChange}
+                    />
+                </div>
             ))}
             <FormBtns handleCancel={handleCancel}/>
         </form>

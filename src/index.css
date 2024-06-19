@@ -106,13 +106,21 @@ h2.user-job {
     padding: 0.5rem;
 }
 
-.experience .description {
+.experience .description,
+.reference {
     border-left: solid orange;
     padding: 0.4rem;
 }
 
 .experience {
     display: flex;
+}
+
+.reference-wrapper {
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(250px, 1fr) );
+    overflow-y: scroll;
+    max-height: 20vh;
 }
 
 form {
@@ -195,9 +203,37 @@ button:hover {
 .expertise-wrapper,
 .education-header,
 .profile-header,
-.experience-header {
+.experience-list-header,
+.reference-list-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+}
+
+.experience-header .institution,
+.reference-header .name {
+    grid-area: left-top;
+}
+
+.experience-header .role,
+.reference-header .institution {
+    grid-area: left-bottom;
+}
+
+.experience-header ion-icon,
+.reference-header ion-icon {
+    grid-area: delete-icon;
+    justify-self: end;
+}
+
+.experience-header,
+.reference-header {
+    display: grid;
+    grid-template-columns: 80% 20%;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+        "left-top delete-icon"
+        "left-bottom delete-icon";
     align-items: center;
 }
 
