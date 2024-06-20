@@ -8,6 +8,8 @@
 
 #main {
     display: grid;
+    align-items: center;
+    gap:1rem;
     grid-template-columns: repeat(3, 1fr);
     grid-template-areas: 
         "left right right"
@@ -30,11 +32,6 @@
 .right-section {
     grid-area: right;
     align-content: center;
-}
-
-.reference-wrapper {
-    display: flex;
-    gap: 1rem;
 }
 
 @media only screen and (max-width: 600px) {

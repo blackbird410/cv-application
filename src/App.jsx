@@ -151,7 +151,6 @@ function Info({ icon, type, text }) {
 }
 
 function ProfilePicture({ url, name }) {
-    console.log(url);
     return (
         <div className="img-wrapper">
             <img src={url} alt={`Profile picture of ${name}`}/>
@@ -542,11 +541,6 @@ function App() {
     const generatePDF = () => {
         const cvContainer = document.getElementById('main');
 
-        cvContainer.style.backgroundColor = 'black';
-        cvContainer.style.color = 'white';
-        cvContainer.querySelectorAll('a').forEach(link => {
-            link.style.color = 'lightblue';
-        });
         cvContainer.querySelector('ion-icon[name="print"]').style.display = "none";
         cvContainer.querySelector("#main-edit").style.display = "none";
         ["trash", "create-outline", "add-circle"]
@@ -554,29 +548,9 @@ function App() {
                 cvContainer.querySelectorAll(`ion-icon[name=${type}]`)
                     .forEach(icon => icon.style.visibility = "hidden")
             );
+        
+        window.print();
 
-        html2canvas(cvContainer, { scale: 2 }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'pt',
-                format: 'a4'
-            });
-
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save('CV.pdf');
-        });
-
-         // Revert styles back to normal
-        cvContainer.style.backgroundColor = '#080b12';
-        cvContainer.style.color = '';
-        cvContainer.querySelectorAll('a').forEach(link => {
-            link.style.color = '#00bfff';
-        });
         cvContainer.querySelector('ion-icon[name="print"]').style.display = "initial";
         cvContainer.querySelector("#main-edit").style.display = "initial";
         ["trash", "create-outline", "add-circle"]
@@ -639,13 +613,13 @@ function App() {
                     handleRemove={handleRemove} 
                     isVisible={isEditingApp}
                 />
-                <ReferenceList 
-                    references={references} 
-                    handleEdit={handleEdit} 
-                    handleRemove={handleRemove}
-                    isVisible={isEditingApp}
-                />
             </div>
+            <ReferenceList 
+                references={references} 
+                handleEdit={handleEdit} 
+                handleRemove={handleRemove}
+                isVisible={isEditingApp}
+            />
 
             {isEditing === "general-info" && (
                 <GeneralInfoForm

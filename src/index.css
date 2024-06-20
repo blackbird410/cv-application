@@ -26,7 +26,7 @@ img {
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--designColor);
   text-decoration: inherit;
 }
 a:hover {
@@ -91,7 +91,8 @@ h2.user-job {
     gap: 1rem;
 }
 
-.right-section div.info-wrapper {
+.right-section div.info-wrapper,
+.reference-list .info-wrapper {
     font-size: 1.5rem;
 }
 
@@ -109,7 +110,8 @@ h2.user-job {
 }
 
 .experience .description,
-.reference {
+.reference,
+.left-section div.section-header {
     border-left: solid orange;
     padding: 0.4rem;
 }
@@ -118,9 +120,14 @@ h2.user-job {
     display: flex;
 }
 
+.reference-list {
+    grid-column: 1 / 4;
+}
+
 .reference-wrapper {
     display: grid;
-    grid-template-columns: repeat( auto-fit, minmax(250px, 1fr) );
+    grid-template-columns: repeat( auto-fit, minmax(200px, 1fr) );
+    gap: 1rem;
 }
 
 .hidden {
