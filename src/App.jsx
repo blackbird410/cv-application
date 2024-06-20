@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
 import "./App.css";
 import img from "./assets/woman.jpg";
 
