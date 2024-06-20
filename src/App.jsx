@@ -549,6 +549,11 @@ function App() {
         });
         cvContainer.querySelector('ion-icon[name="print"]').style.display = "none";
         cvContainer.querySelector("#main-edit").style.display = "none";
+        ["trash", "create-outline", "add-circle"]
+            .forEach(type =>
+                cvContainer.querySelectorAll(`ion-icon[name=${type}]`)
+                    .forEach(icon => icon.style.visibility = "hidden")
+            );
 
         html2canvas(cvContainer, { scale: 2 }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
@@ -574,6 +579,11 @@ function App() {
         });
         cvContainer.querySelector('ion-icon[name="print"]').style.display = "initial";
         cvContainer.querySelector("#main-edit").style.display = "initial";
+        ["trash", "create-outline", "add-circle"]
+            .forEach(type =>
+                cvContainer.querySelectorAll(`ion-icon[name=${type}]`)
+                    .forEach(icon => icon.style.visibility = "visible")
+            );
     };
 
     return (
