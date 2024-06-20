@@ -93,21 +93,47 @@ const initialReferences = [
 
 const capitalize = (text) => text[0].toUpperCase() + text.slice(1);
 
-function TrashIcon({ handleRemove }) {
-    return (
-        <ion-icon 
-            name={getIconName("trash")} 
-            onClick={handleRemove}>
-        </ion-icon>
-    );
+function Icon({ iconType, section, isVisible, handleEdit, handleRemove }) {
+    if (iconType === "trash") {
+        return (
+            <div className={`trash icons ${isVisible ? "" : "hidden"}`}>
+                <ion-icon 
+                    name={getIconName("trash")} 
+                    onClick={handleRemove}>
+                </ion-icon>
+            </div>
+        );
+    } else if (iconType === "add") {
+        return (
+            <div className={`add icons ${isVisible ? "" : "hidden"}`}>
+                <ion-icon 
+                    className={isVisible ? "" : "hidden"}
+                    name="add-circle" 
+                    onClick={() => handleEdit(section)}>
+                </ion-icon>
+            </div>
+        );
+    } else if (iconType === "edit") {
+        return (
+            <div className={`icons ${isVisible ? "" : "hidden"}`}>
+                <ion-icon 
+                    name="create-outline" 
+                    onClick={() => handleEdit(section)}>
+                </ion-icon>
+            </div>
+        );
+    } else {
+        console.error("Icon type not available.")
+    }
 }
+
 
 function Info({ icon, type, text }) {
     if (type === "website") {
         return (
             <div className="info-wrapper">
                 <ion-icon name={`${icon}-outline`}></ion-icon>
-                <a className={`${type}-info`}>{text}</a>
+                <a className={`${type}-info`} href={text} target="_blank">{text}</a>
             </div>
         );
     }
@@ -119,12 +145,16 @@ function Info({ icon, type, text }) {
     );
 }
 
-function Education({ degree, university, period, handleRemove}) {
+function Education({ degree, university, period, handleRemove, isVisible }) {
     return (
         <div>
             <div className="education-header">
                 <h3 className="degree">{degree}</h3>
-                <TrashIcon handleRemove={handleRemove}/>
+                <Icon 
+                    iconType="trash"
+                    isVisible={isVisible} 
+                    handleRemove={handleRemove}
+                />
             </div>
             <h4 className="university">{university}</h4>
             <p className="period">{period}</p>
@@ -132,13 +162,18 @@ function Education({ degree, university, period, handleRemove}) {
     );
 }
 
-function Section({ type, list, generalInfo, handleEdit, handleRemove }) {
+function Section({ type, list, generalInfo, isVisible, handleEdit, handleRemove }) {
     if (type === "general-info") {
         return (
             <>
                 <div className="section-header">
                     <h2>General Info</h2>
-                    <ion-icon name="create-outline" onClick={() => handleEdit(type)}></ion-icon>
+                    <Icon 
+                        iconType="edit"
+                        section={type}
+                        isVisible={isVisible} 
+                        handleEdit={handleEdit}
+                    />
                 </div>
                 <div className="section general-info">
                     <Info icon="call" type="telephone" text={generalInfo.telephone} />
@@ -153,7 +188,12 @@ function Section({ type, list, generalInfo, handleEdit, handleRemove }) {
             <>
                 <div className="section-header">
                     <h2>Education</h2>
-                    <ion-icon name="add-circle" onClick={() => handleEdit(type)}></ion-icon>
+                    <Icon 
+                        iconType="add"
+                        section={type}
+                        isVisible={isVisible} 
+                        handleEdit={handleEdit}
+                    />
                 </div>
                 <div className="section education">
                     {list.map((e) => (
@@ -162,7 +202,9 @@ function Section({ type, list, generalInfo, handleEdit, handleRemove }) {
                             degree={e.degree} 
                             university={e.university} 
                             period={e.period} 
-                            handleRemove={handleRemove} />
+                            handleRemove={handleRemove}
+                            isVisible={isVisible}
+                        />
                     ))}
                 </div>
             </>
@@ -172,16 +214,22 @@ function Section({ type, list, generalInfo, handleEdit, handleRemove }) {
             <>
                 <div className="section-header">
                     <h2>{capitalize(type)}</h2>
-                    <ion-icon 
-                        name="add-circle" 
-                        onClick={() => handleEdit(type)}>
-                    </ion-icon>
+                    <Icon 
+                        iconType="add"
+                        section={type}
+                        isVisible={isVisible} 
+                        handleEdit={handleEdit}
+                    />
                 </div>
                 <div className="section">
                     {list.map((e) => (
                         <div key={e} className={`${type}-wrapper`}>
                             <p>{e}</p>
-                            <TrashIcon handleRemove={handleRemove}/>
+                            <Icon 
+                                iconType="trash"
+                                isVisible={isVisible} 
+                                handleRemove={handleRemove}
+                            />
                         </div>
                     ))}
                 </div>
@@ -190,31 +238,39 @@ function Section({ type, list, generalInfo, handleEdit, handleRemove }) {
     }
 }
 
-function Header({ name, job }) {
+function Header({ name, job, handleEdit }) {
     return (
         <div className="header-wrapper">
             <h1 className="username">{name}</h1>
             <h2 className="user-job">{job}</h2>
+            <Icon 
+                iconType="edit"
+                section="app"
+                isVisible={true} 
+                handleEdit={handleEdit}
+            />
         </div>
     );
 }
 
-function Profile({ text, handleEdit }) {
+function Profile({ text, handleEdit, isVisible }) {
     return (
         <div className="profile">
             <div className="profile-header">
                 <Info icon="person" type="profile" />
-                <ion-icon 
-                    name="create-outline" 
-                    onClick={() => handleEdit("general-info")}>
-                </ion-icon>
+                <Icon 
+                    iconType="edit"
+                    section="general-info"
+                    isVisible={isVisible} 
+                    handleEdit={handleEdit}
+                />
             </div>
             <p className="profile-text">{text}</p>
         </div>
     );
 }
 
-function Experience({ start, end, institution, role, jobs, handleRemove }) {
+function Experience({ start, end, institution, role, jobs, handleRemove, isVisible }) {
     return (
         <div className="experience">
             <div className="period">
@@ -229,7 +285,11 @@ function Experience({ start, end, institution, role, jobs, handleRemove }) {
                 <div className="experience-header">
                     <h3 className="institution">{institution}</h3>
                     <p className="role">{role}</p>
-                    <TrashIcon handleRemove={handleRemove}/>
+                    <Icon 
+                        iconType="trash"
+                        isVisible={isVisible} 
+                        handleRemove={handleRemove}
+                    />
                 </div>
                 <ul>
                     {jobs.map((j) => (
@@ -241,12 +301,17 @@ function Experience({ start, end, institution, role, jobs, handleRemove }) {
     );
 }
 
-function ExperienceList({ experiences, handleEdit, handleRemove }) {
+function ExperienceList({ experiences, isVisible, handleEdit, handleRemove }) {
     return (
         <div className="experience-list">
             <div className="experience-list-header">
                 <Info icon="briefcase" type="work experience" />
-                <ion-icon name={getIconName("add")} onClick={() => handleEdit("experience")}></ion-icon>
+                <Icon 
+                    iconType="add"
+                    section="experience"
+                    isVisible={isVisible} 
+                    handleEdit={handleEdit}
+                />
             </div>
             <div className="experience-wrapper">
                 {experiences.map((e) => (
@@ -258,6 +323,7 @@ function ExperienceList({ experiences, handleEdit, handleRemove }) {
                         jobs={e.responsibilities}
                         role={e.role}
                         handleRemove={handleRemove}
+                        isVisible={isVisible}
                     />
                 ))}
             </div>
@@ -265,13 +331,17 @@ function ExperienceList({ experiences, handleEdit, handleRemove }) {
     );
 }
 
-function Reference({ name, institution, phone, mail, handleRemove }) {
+function Reference({ name, institution, phone, mail, handleRemove, isVisible }) {
     return (
         <div className="reference">
             <div className="reference-header">
                 <h3 className="name">{name}</h3>
                 <p className="institution">{institution}</p>
-                <TrashIcon handleRemove={handleRemove}/>
+                <Icon 
+                    iconType="trash"
+                    isVisible={isVisible} 
+                    handleRemove={handleRemove}
+                />
             </div>
             <p>
                 <a>Phone:</a> {phone}
@@ -283,12 +353,17 @@ function Reference({ name, institution, phone, mail, handleRemove }) {
     );
 }
 
-function ReferenceList({ references, handleEdit, handleRemove }) {
+function ReferenceList({ references, isVisible, handleEdit, handleRemove }) {
     return (
         <div className="reference-list">
             <div className="reference-list-header">
                 <Info icon="book" type="references" />
-                <ion-icon name={getIconName("add")} onClick={() =>handleEdit("references")}></ion-icon>
+                <Icon 
+                    iconType="add"
+                    section="references"
+                    isVisible={isVisible} 
+                    handleEdit={handleEdit}
+                />
             </div>
             <div className="reference-wrapper">
                 {references.map((e) => (
@@ -299,6 +374,7 @@ function ReferenceList({ references, handleEdit, handleRemove }) {
                         phone={e.phone}
                         mail={e.mail}
                         handleRemove={handleRemove}
+                        isVisible={isVisible}
                     />
                 ))}
             </div>
@@ -353,9 +429,11 @@ function App() {
     const [experiences, setExperiences] = useState(initialExperiences);
     const [references, setReferences] = useState(initialReferences);
     const [isEditing, setIsEditing] = useState(false); 
+    const [isEditingApp, setIsEditingApp] = useState(false);
 
     const handleEdit = (section) => {
-        setIsEditing(section);
+        if (section === "app") setIsEditingApp(!isEditingApp);
+        else setIsEditing(section);
     };
 
     const handleSave = (updatedInfo) => {
@@ -367,7 +445,8 @@ function App() {
         if ( type === "education") setEducation(newInfo);
         else if (type === "expertise") setExpertises(newInfo);
         else if (type === "language") setLanguages(newInfo);
-        else if (type === "experience") setExperiences(newInfo);
+        else if (type === "experience") setExperiences(newInfo.sort(
+            (a, b) => b.start.localeCompare(a.start)));
         else if (type === "reference") setReferences(newInfo);
         else {
             console.error("Case not anticipated");
@@ -376,34 +455,62 @@ function App() {
     }
 
     const handleRemove = (e) => {
-        const parent = e.target.parentNode.className;
+        const parent = e.target.parentNode.parentNode.className;
 
         if (parent === "education-header") {
             const newEducation = education.filter(
-                (item) => item.degree !== e.target.parentNode
-                    .childNodes[0].textContent);
+                (item) => item.degree !== e
+                    .target
+                    .parentNode
+                    .parentNode
+                    .childNodes[0]
+                    .textContent);
             setEducation(newEducation)
         } else if (parent === "language-wrapper") {
             const newLanguages = languages.filter(
-                (item) => item !== e.target.parentNode.childNodes[0].textContent);
+                (item) => item !== e.target.parentNode.parentNode.childNodes[0].textContent);
             setLanguages(newLanguages);
         } else if (parent === "experience-header") {
-            const institution = e.target.parentNode.childNodes[0].textContent;
-            const role = e.target.parentNode.childNodes[1].textContent;
+            const institution = e
+                .target
+                .parentNode
+                .parentNode
+                .childNodes[0]
+                .textContent;
+            const role = e
+                .target
+                .parentNode
+                .parentNode
+                .childNodes[1]
+                .textContent;
 
             const newList = experiences.filter((item) => (
                 item.institution !== institution || item.role !== role));
             setExperiences(newList);
         } else if (parent === "reference-header") {
-            const name = e.target.parentNode.childNodes[0].textContent;
-            const institution = e.target.parentNode.childNodes[1].textContent;
+            const name = e
+                .target
+                .parentNode
+                .parentNode
+                .childNodes[0].textContent;
+            const institution = e
+                .target
+                .parentNode
+                .parentNode
+                .childNodes[1]
+                .textContent;
 
             const newReferences = references.filter((item) => (
                 item.name !== name || item.institution != institution));
             setReferences(newReferences);
         } else {
             const newExpertises = expertises.filter(
-                (item) => item !== e.target.parentNode.childNodes[0].textContent);
+                (item) => item !== e
+                    .target
+                    .parentNode
+                    .parentNode
+                    .childNodes[0]
+                    .textContent);
             setExpertises(newExpertises);
         } 
     }
@@ -419,16 +526,53 @@ function App() {
                     type="general-info"
                     generalInfo={generalInfo}
                     handleEdit={handleEdit}
+                    isVisible={isEditingApp}
                 />
-                <Section type="education" list={education} handleEdit={handleEdit} handleRemove={handleRemove} />
-                <Section type="expertise" list={expertises} handleEdit={handleEdit} handleRemove={handleRemove} />
-                <Section type="language" list={languages} handleEdit={handleEdit} handleRemove={handleRemove} />
+                <Section 
+                    type="education" 
+                    list={education} 
+                    handleEdit={handleEdit} 
+                    handleRemove={handleRemove} 
+                    isVisible={isEditingApp} 
+                />
+                <Section 
+                    type="expertise" 
+                    list={expertises} 
+                    handleEdit={handleEdit} 
+                    handleRemove={handleRemove} 
+                    isVisible={isEditingApp} 
+                />
+                <Section 
+                    type="language" 
+                    list={languages} 
+                    handleEdit={handleEdit} 
+                    handleRemove={handleRemove} 
+                    isVisible={isEditingApp}
+                />
             </div>
             <div className="right-section">
-                <Header name={generalInfo.name} job={generalInfo.job} />
-                <Profile text={generalInfo.profile} handleEdit={handleEdit} />
-                <ExperienceList experiences={experiences} handleEdit={handleEdit} handleRemove={handleRemove}/>
-                <ReferenceList references={references} handleEdit={handleEdit} handleRemove={handleRemove} />
+                <Header 
+                    name={generalInfo.name} 
+                    job={generalInfo.job} 
+                    handleEdit={handleEdit} 
+                />
+                <Profile 
+                    text={generalInfo.profile} 
+                    handleEdit={handleEdit} 
+                    isVisible={isEditingApp} 
+                />
+                <ExperienceList 
+                    experiences={experiences} 
+                    handleEdit={handleEdit} 
+                    handleRemove={handleRemove} 
+                    isVisible={isEditingApp}
+                />
+                <ReferenceList 
+                    references={references} 
+                    handleEdit={handleEdit} 
+                    handleRemove={handleRemove}
+                    isVisible={isEditingApp}
+                />
             </div>
 
             {isEditing === "general-info" && (

@@ -123,6 +123,10 @@ h2.user-job {
     max-height: 20vh;
 }
 
+.hidden {
+    display: none;
+}
+
 form {
     display: flex;
     flex-direction: column;
@@ -211,23 +215,27 @@ button:hover {
 }
 
 .experience-header .institution,
-.reference-header .name {
+.reference-header .name,
+.header-wrapper .username {
     grid-area: left-top;
 }
 
 .experience-header .role,
-.reference-header .institution {
+.reference-header .institution,
+.user-job {
     grid-area: left-bottom;
 }
 
 .experience-header ion-icon,
-.reference-header ion-icon {
+.reference-header ion-icon,
+#app-edit {
     grid-area: delete-icon;
     justify-self: end;
 }
 
 .experience-header,
-.reference-header {
+.reference-header,
+.header-wrapper {
     display: grid;
     grid-template-columns: 80% 20%;
     grid-template-rows: 1fr 1fr;
