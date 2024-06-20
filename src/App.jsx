@@ -95,7 +95,7 @@ const initialReferences = [
 
 const capitalize = (text) => text[0].toUpperCase() + text.slice(1);
 
-function Icon({ iconType, section, isVisible, handleEdit, handleRemove }) {
+function Icon({ iconType, id, section, isVisible, handleEdit, handleRemove }) {
     if (iconType === "trash") {
         return (
             <div className={`trash icons ${isVisible ? "" : "hidden"}`}>
@@ -117,7 +117,7 @@ function Icon({ iconType, section, isVisible, handleEdit, handleRemove }) {
         );
     } else if (iconType === "edit") {
         return (
-            <div className={`icons ${isVisible ? "" : "hidden"}`}>
+            <div id={id ? id : ""} className={`icons ${isVisible ? "" : "hidden"}`}>
                 <ion-icon 
                     name="create-outline" 
                     onClick={() => handleEdit(section)}>
@@ -250,6 +250,7 @@ function Header({ name, job, handleEdit, handlePrint}) {
                 section="app"
                 isVisible={true} 
                 handleEdit={handleEdit}
+                id="main-edit"
             />
             <ion-icon 
                 name={getIconName("print")} 
@@ -533,13 +534,15 @@ function App() {
         cvContainer.querySelectorAll('a').forEach(link => {
             link.style.color = 'lightblue';
         });
+        cvContainer.querySelector('ion-icon[name="print"]').style.display = "none";
+        cvContainer.querySelector("#main-edit").style.display = "none";
 
         html2canvas(cvContainer, { scale: 2 }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF({
                 orientation: 'portrait',
                 unit: 'pt',
-                format: 'a3'
+                format: 'a4'
             });
 
             const imgProps = pdf.getImageProperties(imgData);
@@ -556,6 +559,8 @@ function App() {
         cvContainer.querySelectorAll('a').forEach(link => {
             link.style.color = '#00bfff';
         });
+        cvContainer.querySelector('ion-icon[name="print"]').style.display = "initial";
+        cvContainer.querySelector("#main-edit").style.display = "initial";
     };
 
     return (
