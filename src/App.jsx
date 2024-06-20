@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 import "./App.css";
 
 // Sample data
@@ -238,7 +240,7 @@ function Section({ type, list, generalInfo, isVisible, handleEdit, handleRemove 
     }
 }
 
-function Header({ name, job, handleEdit }) {
+function Header({ name, job, handleEdit, handlePrint}) {
     return (
         <div className="header-wrapper">
             <h1 className="username">{name}</h1>
@@ -249,6 +251,9 @@ function Header({ name, job, handleEdit }) {
                 isVisible={true} 
                 handleEdit={handleEdit}
             />
+            <ion-icon 
+                name={getIconName("print")} 
+                onClick={() => handlePrint()}></ion-icon>
         </div>
     );
 }
@@ -397,6 +402,7 @@ function FormBtns({ handleCancel }) {
 
 const getIconName = (input) => {
     const iconMappings = {
+        print: "print",
         mail: "mail",
         language: "language",
         bulb: "bulb",
@@ -519,6 +525,39 @@ function App() {
         setIsEditing(false);
     };
 
+    const generatePDF = () => {
+        const cvContainer = document.getElementById('main');
+
+        cvContainer.style.backgroundColor = 'black';
+        cvContainer.style.color = 'white';
+        cvContainer.querySelectorAll('a').forEach(link => {
+            link.style.color = 'lightblue';
+        });
+
+        html2canvas(cvContainer, { scale: 2 }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'pt',
+                format: 'a3'
+            });
+
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save('CV.pdf');
+        });
+
+         // Revert styles back to normal
+        cvContainer.style.backgroundColor = '#080b12';
+        cvContainer.style.color = '';
+        cvContainer.querySelectorAll('a').forEach(link => {
+            link.style.color = '#00bfff';
+        });
+    };
+
     return (
         <div id="main">
             <div className="left-section">
@@ -555,6 +594,7 @@ function App() {
                     name={generalInfo.name} 
                     job={generalInfo.job} 
                     handleEdit={handleEdit} 
+                    handlePrint={generatePDF}
                 />
                 <Profile 
                     text={generalInfo.profile} 

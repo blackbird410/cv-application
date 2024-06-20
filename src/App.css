@@ -17,6 +17,7 @@
 
 .left-section {
     grid-area: left;
+    align-content: center;
 }
 
 .right-section {
@@ -26,12 +27,5 @@
 .reference-wrapper {
     display: flex;
     gap: 1rem;
-    overflow-y: scroll;
-
 }
-
-/* .section { */
-/*     max-height: 300px; */
-/*     overflow: scroll; */
-/* } */
 
