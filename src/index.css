@@ -18,6 +18,12 @@
     --bgColor: #080b12;
 }
 
+img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 50%;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -28,9 +34,6 @@ a:hover {
     cursor: pointer;
 }
 
-.left-section, .right-section {
-    padding: 1rem;
-}
 
 .education {
     display: flex;

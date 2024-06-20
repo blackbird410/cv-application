@@ -2,6 +2,8 @@ import { useState } from "react";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import "./App.css";
+import img from "./assets/woman.jpg";
+
 
 // Sample data
 const initialGeneralInfo = {
@@ -11,7 +13,8 @@ const initialGeneralInfo = {
     mail: "oliviawilson@gmail.com",
     website: "oliviawilson.com",
     location: "20 Cooper Square, New York, NY 10003, USA",
-    profile: "Lorem ipsum dolor sit amet, consectetur adipiscing elit..."
+    imageUrl: img,
+    profile: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
 };
 
 const initialEducation = [
@@ -143,6 +146,15 @@ function Info({ icon, type, text }) {
         <div className="info-wrapper">
             <ion-icon name={`${icon}-outline`}></ion-icon>
             <p className={`${type}-info`}>{text ? text : capitalize(type)}</p>
+        </div>
+    );
+}
+
+function ProfilePicture({ url, name }) {
+    console.log(url);
+    return (
+        <div className="img-wrapper">
+            <img src={url} alt={`Profile picture of ${name}`}/>
         </div>
     );
 }
@@ -421,7 +433,8 @@ const getIconName = (input) => {
         degree: "ribbon",
         university: "school",
         institution: "business",
-        responsibilities: "construct"
+        responsibilities: "construct",
+        imageUrl: "image",
     };
 
     return iconMappings[input] || "information-circle";
@@ -566,6 +579,10 @@ function App() {
     return (
         <div id="main">
             <div className="left-section">
+                <ProfilePicture 
+                    url={generalInfo.imageUrl} 
+                    name={generalInfo.name} 
+                />
                 <Section
                     type="general-info"
                     generalInfo={generalInfo}
@@ -677,10 +694,18 @@ function GeneralInfoForm({ generalInfo, handleSave, handleCancel }) {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
+        if (name !== "imageUrl") {
+            setFormData({
+                ...formData,
+                [name]: value,
+            });
+        } else {
+            handleFileUpload();
+            setFormData({
+                ...formData,
+                imageUrl: localStorage.getItem("uploadedImage"),
+            });
+        }
     };
 
     const handleSubmit = (e) => {
@@ -688,18 +713,46 @@ function GeneralInfoForm({ generalInfo, handleSave, handleCancel }) {
         handleSave(formData);
     };
 
+
+    const handleFileUpload = () => {
+        const fileInput = document.getElementById('imageUrl');
+        
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0]; 
+
+            // Use FileReader to read file content
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imageData = event.target.result; // Base64-encoded string
+                localStorage.setItem('uploadedImage', imageData);
+                console.log('Image stored in localStorage.');
+            };
+            reader.readAsDataURL(file); // Convert file to Data URL representation
+        } else {
+            console.error('No file selected.');
+        }
+    }
+
     return (
         <form id="general-info-form" onSubmit={handleSubmit}>
             {Object.keys(generalInfo).map((key) => (
                 <div key={key} className="input-wrapper">
                     <ion-icon name={getIconName(key)}></ion-icon>
-                    {key !== "profile" ? (
+                    {key !== "profile" && key !== "imageUrl" ? (
                         <input
                             type="text"
                             id={key}
                             name={key}
                             placeholder={generalInfo[key]}
                             value={formData[key]}
+                            onChange={handleChange}
+                        />
+                    ) : key === "imageUrl" ? (
+                        <input
+                            type="file"
+                            id={key}
+                            name={key}
+                            accept=".jpg, .jpeg, .png"
                             onChange={handleChange}
                         />
                     ) : (
