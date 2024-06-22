@@ -91,6 +91,10 @@ h2.user-job {
     gap: 1rem;
 }
 
+.left-section {
+  border: solid lightgray;
+}
+
 .right-section div.info-wrapper,
 .reference-list .info-wrapper {
     font-size: 1.5rem;
@@ -103,7 +107,7 @@ h2.user-job {
 }
 
 .experience .period {
-    align-content: center;
+    align-content: top;
     text-align: center;
     font-weight: bold;
     padding: 0.5rem;
